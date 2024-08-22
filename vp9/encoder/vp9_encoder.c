@@ -3961,7 +3961,6 @@ static void save_encode_params(VP9_COMP *cpi) {
 }
 
 static INLINE void set_raw_source_frame(VP9_COMP *cpi) {
-  printf("set_raw_source_frame\n");
 #ifdef ENABLE_KF_DENOISE
   if (is_spatial_denoise_enabled(cpi)) {
     cpi->raw_source_frame = vp9_scale_if_required(
