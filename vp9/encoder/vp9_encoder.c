@@ -5627,7 +5627,7 @@ static void encode_frame_to_data_rate(
 
   vpx_clear_system_state();
 
-#if CONFIG_INTERNAL_STATS
+#if 0 & CONFIG_INTERNAL_STATS
   memset(cpi->mode_chosen_counts, 0,
          MAX_MODES * sizeof(*cpi->mode_chosen_counts));
 #endif
@@ -6104,7 +6104,7 @@ static void check_src_altref(VP9_COMP *cpi,
   }
 }
 
-#if CONFIG_INTERNAL_STATS
+#if 0 && CONFIG_INTERNAL_STATS
 static void adjust_image_stat(double y, double u, double v, double all,
                               ImageStat *s) {
   s->stat[Y] += y;
@@ -6726,7 +6726,7 @@ int vp9_get_compressed_data(VP9_COMP *cpi, unsigned int *frame_flags,
   if (cpi->keep_level_stats && oxcf->pass != 1)
     update_level_info(cpi, size, arf_src_index);
 
-#if CONFIG_INTERNAL_STATS
+#if 0 && CONFIG_INTERNAL_STATS
 
   if (oxcf->pass != 1 && !cpi->last_frame_dropped) {
     double samples = 0.0;
