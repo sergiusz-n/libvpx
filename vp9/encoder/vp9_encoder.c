@@ -468,7 +468,7 @@ static int is_ssim_calc_enabled(const VP9_COMP *cpi) {
   const VP9_COMMON *const cm = &cpi->common;
   const VP9EncoderConfig *const oxcf = &cpi->oxcf;
 
-  return cpi->b_calculate_fastssim && (oxcf->pass != 1) && cm->show_frame;
+  return cpi->b_calculate_ssim && (oxcf->pass != 1) && cm->show_frame;
 }
 
 /* clang-format off */
@@ -2968,9 +2968,12 @@ int vp9_get_psnr(const VP9_COMP *cpi, PSNR_STATS *psnr) {
 
 int vp9_get_ssim(const VP9_COMP *cpi, SSIM_STATS *ssim) {
   if (is_ssim_calc_enabled(cpi)) {
-    ssim->ssim[0] = vpx_calc_fastssim(cpi->raw_source_frame, cpi->common.frame_to_show,
-                                    &ssim->ssim[1], &ssim->ssim[2], &ssim->ssim[3],
-                                    cpi->td.mb.e_mbd.bd, cpi->oxcf.input_bit_depth);
+    ssim->ssim[0] = cpi->common.use_highbitdepth
+                      ? vpx_highbd_calc_ssim_(cpi->raw_source_frame, cpi->common.frame_to_show,
+                                             &ssim->ssim[1], &ssim->ssim[2], &ssim->ssim[3],
+                                             cpi->td.mb.e_mbd.bd, cpi->oxcf.input_bit_depth)
+                      : vpx_calc_ssim_(cpi->raw_source_frame, cpi->common.frame_to_show,
+                                       &ssim->ssim[1], &ssim->ssim[2], &ssim->ssim[3]);
     return 1;
   } else {
     vp9_zero(*ssim);

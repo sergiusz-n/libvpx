@@ -1416,7 +1416,7 @@ static vpx_codec_err_t encoder_encode(vpx_codec_alg_priv_t *ctx,
 
     // Set up internal flags
     if (ctx->base.init_flags & VPX_CODEC_USE_PSNR) cpi->b_calculate_psnr = 1;
-    if (ctx->base.init_flags & VPX_CODEC_USE_SSIM) cpi->b_calculate_fastssim = 1;
+    if (ctx->base.init_flags & VPX_CODEC_USE_SSIM) cpi->b_calculate_ssim = 1;
 
     if (img != NULL) {
       const int64_t dst_end_time_stamp =

@@ -904,7 +904,7 @@ typedef struct VP9_COMP {
   ImageStat fastssim;
   ImageStat psnrhvs;
 
-  int b_calculate_fastssim;
+  int b_calculate_ssim;
   int b_calculate_ssimg;
   int b_calculate_blockiness;
 

@@ -168,23 +168,28 @@ static double vpx_highbd_ssim2(const uint8_t *img1, const uint8_t *img2,
 double vpx_calc_ssim(const YV12_BUFFER_CONFIG *source,
                      const YV12_BUFFER_CONFIG *dest, double *weight) {
   double a, b, c;
+  *weight = 1;
+  return vpx_calc_ssim_(source, dest, &a, &b, &c);
+}
+
+double vpx_calc_ssim_(const YV12_BUFFER_CONFIG *source,
+                      const YV12_BUFFER_CONFIG *dest,
+                      double *ssim_y, double *ssim_u, double *ssim_v) {
   double ssimv;
 
-  a = vpx_ssim2(source->y_buffer, dest->y_buffer, source->y_stride,
+  *ssim_y = vpx_ssim2(source->y_buffer, dest->y_buffer, source->y_stride,
                 dest->y_stride, source->y_crop_width, source->y_crop_height);
 
-  b = vpx_ssim2(source->u_buffer, dest->u_buffer, source->uv_stride,
+  *ssim_u = vpx_ssim2(source->u_buffer, dest->u_buffer, source->uv_stride,
                 dest->uv_stride, source->uv_crop_width, source->uv_crop_height);
 
-  c = vpx_ssim2(source->v_buffer, dest->v_buffer, source->uv_stride,
+  *ssim_v = vpx_ssim2(source->v_buffer, dest->v_buffer, source->uv_stride,
                 dest->uv_stride, source->uv_crop_width, source->uv_crop_height);
 
-  ssimv = a * .8 + .1 * (b + c);
-
-  *weight = 1;
-
+  ssimv = (*ssim_y) * .8 + .1 * ((*ssim_u) + (*ssim_v));
   return ssimv;
 }
+
 
 // traditional ssim as per: http://en.wikipedia.org/wiki/Structural_similarity
 //
@@ -433,28 +438,34 @@ double vpx_highbd_calc_ssim(const YV12_BUFFER_CONFIG *source,
                             const YV12_BUFFER_CONFIG *dest, double *weight,
                             uint32_t bd, uint32_t in_bd) {
   double a, b, c;
+  *weight = 1;
+
+  return vpx_highbd_calc_ssim_(source, dest, &a, &b, &c, bd, in_bd);
+}
+
+double vpx_highbd_calc_ssim_(const YV12_BUFFER_CONFIG *source,
+                            const YV12_BUFFER_CONFIG *dest, double *ssim_y,
+                            double *ssim_u, double *ssim_v, uint32_t bd,
+                            uint32_t in_bd)  {
   double ssimv;
   uint32_t shift = 0;
 
   assert(bd >= in_bd);
   shift = bd - in_bd;
 
-  a = vpx_highbd_ssim2(source->y_buffer, dest->y_buffer, source->y_stride,
-                       dest->y_stride, source->y_crop_width,
-                       source->y_crop_height, in_bd, shift);
+  *ssim_y = vpx_highbd_ssim2(source->y_buffer, dest->y_buffer, source->y_stride,
+                             dest->y_stride, source->y_crop_width,
+                             source->y_crop_height, in_bd, shift);
 
-  b = vpx_highbd_ssim2(source->u_buffer, dest->u_buffer, source->uv_stride,
-                       dest->uv_stride, source->uv_crop_width,
-                       source->uv_crop_height, in_bd, shift);
+  *ssim_u = vpx_highbd_ssim2(source->u_buffer, dest->u_buffer, source->uv_stride,
+                             dest->uv_stride, source->uv_crop_width,
+                             source->uv_crop_height, in_bd, shift);
 
-  c = vpx_highbd_ssim2(source->v_buffer, dest->v_buffer, source->uv_stride,
-                       dest->uv_stride, source->uv_crop_width,
-                       source->uv_crop_height, in_bd, shift);
+  *ssim_v = vpx_highbd_ssim2(source->v_buffer, dest->v_buffer, source->uv_stride,
+                             dest->uv_stride, source->uv_crop_width,
+                             source->uv_crop_height, in_bd, shift);
 
-  ssimv = a * .8 + .1 * (b + c);
-
-  *weight = 1;
-
+  ssimv = (*ssim_y) * .8 + .1 * ((*ssim_u) + (*ssim_v));
   return ssimv;
 }
 
